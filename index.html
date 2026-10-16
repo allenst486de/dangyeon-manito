@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>당연캠프 마니또</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Gowun+Batang:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --berry:#95475a; --berry-deep:#6e2f42; --night:#24091a; --ink:#3b1626;
+  --blossom:#f7d6e0; --petal:#fdf1f4; --gold:#e3bf72; --c-red:#ff8a80; --c-yellow:#f2c230;
+}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%;overflow-x:hidden}
+body{-webkit-font-smoothing:antialiased;font-family:"Gowun Dodum",sans-serif;color:var(--petal);background:var(--berry);overflow-x:hidden}
+#fx{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none}
+#fx.front{z-index:4}
+.hero{position:relative;z-index:2;background:linear-gradient(180deg,var(--blossom),var(--petal));padding:40px 16px 0;display:flex;flex-direction:column;align-items:center}
+
+.wrap{position:relative;z-index:2;min-height:60svh;display:flex;flex-direction:column;align-items:center;padding:8px 16px 64px}
+.ring{width:min(220px,54vw);aspect-ratio:1;overflow:visible}
+h1{text-wrap:balance;font-family:"Jua";font-weight:400;font-size:clamp(34px,8vw,56px);line-height:1.1;margin-top:18px;text-align:center;perspective:600px;color:var(--berry-deep)}
+h1 span{display:inline-block}
+.sub{margin-top:8px;font-size:17px;color:var(--berry);text-align:center}
+.round{align-self:stretch;margin:28px -16px 0;padding:14px 16px;border-radius:40px 40px 0 0;font-family:"Jua";font-size:17px;color:#fff;text-align:center;background:var(--berry)}
+
+.draw{width:100%;max-width:440px;margin-top:0;padding:24px;border-radius:28px;display:grid;gap:14px;color:var(--ink);background:var(--petal);box-shadow:0 18px 40px -18px #2a0b18}
+.field label{display:block;font-family:"Jua";font-size:18px;margin-bottom:6px}
+.field small{display:block;color:var(--berry);font-size:14px;margin-top:5px}
+input{width:100%;font:inherit;font-size:18px;padding:13px 16px;border:2px solid var(--blossom);border-radius:16px;background:#fff;color:var(--ink);transition:border-color 160ms ease}
+input:focus{outline:none;border-color:var(--berry)}
+button{font-family:"Jua";font-size:19px;border:0;border-radius:16px;padding:15px 18px;color:#3b1626;cursor:pointer;transition:transform 160ms cubic-bezier(.23,1,.32,1);
+  background:var(--berry-deep);color:#fff}
+button:active{transform:scale(.96)}
+button:focus-visible,input:focus-visible,.card:focus-visible{outline:3px solid var(--c-yellow);outline-offset:3px}
+button:disabled{opacity:.6}
+.msg{font-size:15px;color:#c0392b;line-height:1.5}
+.msg:empty{display:none}
+
+/* 카드 무대 */
+/* 휴대폰 한 화면에 카드+안내+버튼이 들어가도록: 폭은 화면 폭과 높이 중 작은 쪽에 맞춤 */
+.stage{position:relative;width:min(320px,calc(100vw - 32px),calc((100vh - 170px)*.676));width:min(320px,calc(100vw - 32px),calc((100svh - 170px)*.676));margin:24px auto 0;padding-bottom:8px;display:none;perspective:1400px}
+.wrap{overflow-x:clip}
+.stage.on{display:block}
+.deck{position:absolute;left:0;right:0;top:0;aspect-ratio:300/444;pointer-events:none}
+.deck .dc{position:absolute;inset:0;border-radius:20px;overflow:hidden;box-shadow:0 20px 40px -20px #1d0610}
+.deck .dc svg{width:100%;height:100%;display:block}
+.glow{position:absolute;left:50%;top:40%;width:160%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,rgba(246,215,154,.75),rgba(238,138,42,.25) 35%,transparent 65%)}
+.tilt{transform-style:preserve-3d}
+.card{position:relative;display:block;width:100%;aspect-ratio:300/444;transform-style:preserve-3d;cursor:pointer;border-radius:20px;opacity:0;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.face{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;box-shadow:0 30px 60px -24px #1d0610}
+.face>svg{position:absolute;inset:0;width:100%;height:100%}
+.face::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;
+  background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.6) calc(var(--mx,50%) - 8%),rgba(242,194,48,.4) var(--mx,50%),rgba(130,90,200,.35) calc(var(--mx,50%) + 8%),transparent 80%)}
+.back{transform:rotateY(180deg)}
+.over{position:absolute;left:12%;right:12%;text-align:center}
+.front .over.t{top:86%;transform:translateY(-50%)}
+.cap{font-family:"Gowun Batang",serif;font-size:12px;color:var(--gold);letter-spacing:.08em}
+.name{font-family:"Gowun Batang",serif;font-weight:700;font-size:clamp(30px,10vw,40px);line-height:1.15;color:var(--petal);letter-spacing:.06em}
+.name span,.mission span{display:inline-block}
+.mission span{margin:0 .14em}
+.back .over.t{top:45%;bottom:16%;display:flex;flex-direction:column;justify-content:center}
+.mission{font-family:"Jua";font-size:clamp(22px,6.6vw,27px);line-height:1.45;color:var(--petal);word-break:keep-all;text-wrap:pretty}
+.back .over.b{bottom:8.5%}
+.hint{text-align:center;color:var(--blossom);font-size:15px;margin-top:16px;opacity:0}
+.again{display:block;margin:12px auto 0;min-height:44px;background:transparent;border:2px solid var(--blossom);color:var(--blossom);font-size:16px;padding:10px 20px;box-shadow:none;opacity:0}
+
+footer{position:relative;z-index:2;text-align:center;padding:18px 16px;font-size:14px;color:var(--blossom);background:var(--berry-deep)}
+footer button{background:none;box-shadow:none;padding:12px;min-height:44px;font-size:13px;color:var(--blossom);opacity:.65;font-family:inherit}
+dialog{border:0;border-radius:24px;padding:22px;max-width:min(640px,96vw);width:100%;background:var(--petal);color:var(--ink)}
+dialog::backdrop{background:rgba(20,5,14,.7);backdrop-filter:blur(4px)}
+dialog h2{font-family:"Jua";font-weight:400;margin-bottom:12px}
+dialog .msg{color:#c0392b}
+.prow{display:flex;gap:8px}.prow input{flex:1;min-width:0}.prow button{font-size:16px;padding:12px 16px}
+.close{float:right;background:none;box-shadow:none;color:var(--berry);font-size:15px;padding:4px 8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{white-space:nowrap;text-align:left;font-family:"Jua";font-weight:400;color:var(--berry);padding:6px 4px;border-bottom:2px solid var(--blossom);position:sticky;top:0;background:var(--petal)}
+td{padding:7px 4px;border-bottom:1px solid var(--blossom);vertical-align:top}
+td:first-child{white-space:nowrap}
+td:nth-child(2){color:var(--berry-deep);font-weight:700;white-space:nowrap}
+td .m{display:block;margin-top:4px;font-weight:400;color:var(--ink);white-space:normal;word-break:keep-all}
+td small{display:block;font-size:12px;font-weight:400;color:var(--berry);white-space:nowrap}
+.list{max-height:60vh;overflow:auto;margin-top:6px}
+[hidden]{display:none!important}
+.nogsap .card,.nogsap .hint,.nogsap .again{opacity:1}
+</style>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<noscript><div style="position:relative;z-index:9;background:#fff3c4;color:#3b1626;padding:14px 16px;font-size:16px;line-height:1.6;text-align:center">지금 화면은 <b>미리보기</b>라서 뽑기가 작동하지 않아요.<br>오른쪽 위 메뉴(⋯ 또는 공유 버튼)에서 <b>Safari / Chrome으로 열기</b>를 눌러 주세요.</div></noscript>
+
+<header class="hero">
+  <svg class="ring" id="ringSvg" viewBox="0 0 200 200" aria-hidden="true"><g id="ring"></g></svg>
+  <h1 id="title">당연캠프 마니또</h1>
+  <p class="sub" id="sub">오늘 몰래 챙겨줄 한 사람을 뽑아요</p>
+  <p class="round" id="band">&nbsp;</p>
+</header>
+<div class="wrap">
+
+  <form class="draw" id="f" autocomplete="off" novalidate>
+    <div class="field">
+      <label for="nm">이름</label>
+      <input id="nm" placeholder="홍길동" maxlength="10" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="nk">카페 닉네임</label>
+      <input id="nk" placeholder="서울슈거트리" maxlength="30" autocomplete="off">
+      <small>띄어쓰기 없이 붙여서 써 주세요</small>
+    </div>
+    <div class="field">
+      <label for="yr">태어난 해</label>
+      <input id="yr" placeholder="1985" inputmode="numeric" maxlength="4" autocomplete="off">
+      <small>숫자 4자리만 써 주세요 (예: 1985)</small>
+    </div>
+    <p class="msg" id="msg" role="alert"></p>
+    <button id="go">내 마니또 카드 뽑기</button>
+  </form>
+
+  <div class="stage" id="stage" aria-live="polite">
+    <div class="glow" id="glow"></div>
+    <div class="deck" id="deck"></div>
+    <div class="tilt" id="tilt">
+      <div class="card" id="card" role="button" tabindex="0" aria-label="카드를 눌러 뒤집기">
+        <div class="face front" id="front"></div>
+        <div class="face back" id="back"></div>
+      </div>
+    </div>
+    <p class="hint" id="hint">카드를 누르면 뒷면에 오늘의 미션이 있어요</p>
+    <button class="again" id="again" type="button">처음으로</button>
+  </div>
+</div>
+
+<footer>
+  사단법인 한국1형당뇨병환우회 · 슈거트리
+  <br><button type="button" id="adm">운영진 전체 명단</button>
+</footer>
+
+<dialog id="dlg">
+  <button class="close" id="dclose" type="button">닫기</button>
+  <h2>전체 명단</h2>
+  <form id="pf" class="prow"><input id="pw" type="password" placeholder="운영진 비밀번호" autocomplete="off"><button>열기</button></form>
+  <p class="msg" id="pmsg"></p>
+  <div class="list" id="list"></div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="mc.js"></script>
+<script src="paper.js"></script>
+<!-- data --><script>
+// mode.js 한 줄(draw / reveal)에 따라 데이터 파일을 고른다. 매번 새로 받도록 주소 뒤에 시각을 붙임.
+document.write('<script src="mode.js?'+Date.now()+'"><\/script>');
+</script><script>
+document.write('<script src="'+(window.MANITO_MODE==="reveal"?"data_reveal.js":"data.js")+'?'+Date.now()+'"><\/script>');
+</script><!-- /data -->
+<script>
+(()=>{
+const D=window.MANITO,$=id=>document.getElementById(id),G=window.gsap;
+if(!G)document.documentElement.classList.add("nogsap");
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const C=["#d24846","#ee8a2a","#f2c230","#4b9b3b","#225ea7","#835594"],LOGO=[C[0],C[1],C[3],C[4],C[5]];
+
+// 운영진이 매칭을 확정하면 data.js에 "fixed" 회차 하나만 남는다 → 시간과 상관없이 그 매칭을 쓴다
+const FIXED=!!(D.slots&&D.slots.fixed);
+const slot=FIXED?"fixed":Math.floor((Date.now()/1000+D.tz)/D.sec);
+const fmt=s=>{const d=new Date((s*D.sec-D.tz)*1000);return`${d.getMonth()+1}월 ${d.getDate()}일 ${d.getHours()}시`};
+const slotLabel=FIXED?"확정된 매칭":`${fmt(slot)}~${new Date(((slot+1)*D.sec-D.tz)*1000).getHours()}시 회차`;
+// 모드: 추첨(draw) / 추첨 끝난 뒤 내 카드 확인(reveal) — mode.js가 고른 데이터의 mode로 바뀐다
+const REVEAL=D.mode==="reveal";
+const T=REVEAL?{back:"오늘의 운세",cap:"나의 카드",hint:"카드를 누르거나 옆으로 밀면 오늘의 운세가 있어요",foot:"마니또 함께해 줘서 고마워요",go:"내 카드 보기",sub:"마니또가 받았던 바로 그 카드예요"}
+  :{back:"오늘의 미션",cap:"당신의 마니또",hint:"카드를 누르거나 옆으로 밀면 오늘의 미션이 있어요",foot:null,go:"내 마니또 카드 뽑기",sub:null};
+$("go").textContent=T.go;$("hint").textContent=T.hint;if(T.sub)$("sub").textContent=T.sub;
+$("band").textContent=REVEAL?`마니또가 끝났어요 · ${D.total}명의 카드`:D.slots[slot]?`${slotLabel} · ${D.total}명`:"지금은 뽑기 시간이 아니에요";
+
+// ===== 2. 단풍잎·은행잎 입자 (캔버스) — 바람, 손가락 피하기, 카드 공개 때 폭발 =====
+const FX=(()=>{const cv=$("fx"),x=cv.getContext("2d"),dpr=Math.min(devicePixelRatio||1,2);
+  const MAPLE=new Path2D("M50 4L58 24L70 16L66 36L86 30L78 46L96 50L78 58L84 70L64 66L60 80L52 70L52 96L48 96L48 70L40 80L36 66L16 70L22 58L4 50L22 46L14 30L34 36L30 16L42 24Z");
+  const GINKGO=new Path2D("M48 97Q49 82 49 68C27 64 5 44 6 24C22 12 40 14 47 25L50 31L53 25C60 14 78 12 94 24C95 44 73 64 51 68Q51 82 52 97Z");
+  const COLS=[[MAPLE,"#c8352b"],[MAPLE,"#e0552a"],[GINKGO,"#f0b928"],[MAPLE,"#d9772a"],[GINKGO,"#e8a419"],[MAPLE,"#b02a2a"]];
+  let W,H,ps=[],px=-999,py=-999;
+  const size=()=>{W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0)};size();addEventListener("resize",size);
+  addEventListener("pointermove",e=>{px=e.clientX;py=e.clientY});addEventListener("pointerleave",()=>{px=py=-999});
+  const mk=(o={})=>{const [path,col]=COLS[Math.random()*COLS.length|0];return Object.assign({x:Math.random()*W,y:-30-Math.random()*H,vx:0,vy:.4+Math.random()*.6,
+    r:Math.random()*6.28,vr:(Math.random()-.5)*.04,f:Math.random()*6.28,vf:.03+Math.random()*.04,s:14+Math.random()*14,path,col,amb:true,life:1},o)};
+  const N=REDUCE?0:(W<600?22:34);for(let i=0;i<N;i++)ps.push(mk({y:Math.random()*H}));
+  let t=0;(function loop(){t+=.01;x.clearRect(0,0,W,H);const wind=Math.sin(t*.7)*.35;
+    for(const p of ps){
+      if(p.amb){p.vx+=(wind-p.vx)*.02;p.vy+=(.7-p.vy)*.02}else{p.vy+=.12;p.vx*=.985;p.vy*=.985;p.life-=.006}
+      const dx=p.x-px,dy=p.y-py,d2=dx*dx+dy*dy;if(d2<9000){const k=(9000-d2)/9000*.6;p.vx+=dx/Math.sqrt(d2+1)*k;p.vy+=dy/Math.sqrt(d2+1)*k*.5}
+      p.x+=p.vx+Math.sin(t*2+p.f)*.4;p.y+=p.vy;p.r+=p.vr;p.f+=p.vf;
+      if(p.amb&&(p.y>H+40||p.x<-60||p.x>W+60))Object.assign(p,mk());
+      x.save();x.globalAlpha=Math.max(0,Math.min(1,p.life))*.95;x.translate(p.x,p.y);x.rotate(p.r);x.scale(Math.cos(p.f),1);x.scale(p.s/100,p.s/100);x.translate(-50,-50);
+      x.fillStyle=p.col;x.fill(p.path);x.strokeStyle="rgba(0,0,0,.2)";x.lineWidth=3;x.beginPath();x.moveTo(50,96);x.lineTo(50,40);x.stroke();x.restore()}
+    ps=ps.filter(p=>p.amb||p.life>0);requestAnimationFrame(loop)})();
+  return{burst(cx,cy,n=70){if(REDUCE)return;for(let i=0;i<n;i++){const a=Math.random()*6.28,v=4+Math.random()*9;
+    ps.push(mk({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,s:12+Math.random()*16,amb:false,life:1.4+Math.random()*.6}))}}};})();
+
+// ===== 3. 로고 고리 + 제목 등장 =====
+const ring=(cols,cls="")=>cols.map((c,i)=>`<g class="${cls}"><g transform="rotate(${i*72} 100 100)">
+  <path d="M60 64 Q100 40 140 64 L128 78 Q100 62 72 78Z" fill="${c}"/><circle cx="100" cy="30" r="13" fill="${c}"/></g></g>`).join("");
+$("ring").innerHTML=ring(LOGO,"pp");
+$("title").innerHTML=[...$("title").textContent].map(ch=>ch===" "?" ":`<span>${ch}</span>`).join("");
+let spin;
+if(G){G.set("#ring",{transformOrigin:"100px 100px"});
+  if(REDUCE)G.from([".ring","#title",".sub",".round","#f"],{opacity:0,duration:.4,stagger:.05});
+  else{const tl=G.timeline({defaults:{ease:"expo.out"}});
+    tl.from(".pp",{opacity:0,scale:.2,rotation:-200,x:()=>G.utils.random(-160,160),y:()=>G.utils.random(-120,120),svgOrigin:"100 100",duration:1.3,stagger:.1,ease:"back.out(1.6)"})
+      .from("#title span",{opacity:0,y:40,rotateX:-90,duration:.8,stagger:.04},"-=.8")
+      .from([".sub",".round"],{opacity:0,y:14,duration:.6,stagger:.08},"-=.5")
+      .from("#f",{opacity:0,y:30,scale:.97,duration:.8},"-=.45");
+    spin=G.to("#ring",{rotation:360,duration:30,ease:"none",repeat:-1})}}
+
+// ===== 4. 카드 그리기 (기본 안과 같은 타로 디자인) =====
+function rng(a){return()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const roman=n=>[[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]].reduce((s,[v,r])=>{while(n>=v){s+=r;n-=v}return s},"");
+const f1=v=>v.toFixed(1),ARCH="M42 324V196A108 108 0 0 1 258 196V324Z";
+const star=(x,y,s)=>`<path d="M${x} ${y-s}L${x+s*.27} ${y-s*.27}L${x+s} ${y}L${x+s*.27} ${y+s*.27}L${x} ${y+s}L${x-s*.27} ${y+s*.27}L${x-s} ${y}L${x-s*.27} ${y-s*.27}Z"/>`;
+const FRAME=(id,inner)=>`<svg viewBox="0 0 300 444" aria-hidden="true"><defs>
+  <linearGradient id="bg${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a3550"/><stop offset="1" stop-color="#3b1626"/></linearGradient>
+  <linearGradient id="win${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdf1f4"/><stop offset="1" stop-color="#f4c9d6"/></linearGradient>
+  <clipPath id="clip${id}"><path d="${ARCH}"/></clipPath></defs>
+  <rect width="300" height="444" rx="20" fill="url(#bg${id})"/>
+  <g fill="none" stroke="#e3bf72"><rect x="10" y="10" width="280" height="424" rx="10" stroke-width="1.4"/><rect x="16" y="16" width="268" height="412" rx="4" stroke-width=".7" opacity=".6"/></g>
+  <g fill="#e3bf72">${star(26,26,6)+star(274,26,6)+star(26,418,6)+star(274,418,6)}</g>${inner}</svg>`;
+const frontSVG=k=>FRAME("f",`
+  <text x="150" y="48" text-anchor="middle" font-family="Gowun Batang,serif" font-weight="700" font-size="18" fill="#e3bf72" letter-spacing="3">${roman(k)}</text>
+  <path d="M108 58H134M166 58H192" stroke="#e3bf72" stroke-width=".8"/>
+  <path d="${ARCH}" fill="url(#winf)"/><g clip-path="url(#clipf)">${PAPER(k)}</g>
+  <path d="${ARCH}" fill="none" stroke="#e3bf72" stroke-width="2"/>
+  <path d="M35 324V196A115 115 0 0 1 265 196V324" fill="none" stroke="#e3bf72" stroke-width=".7" opacity=".6"/>`);
+const cover=(k,id,label=true)=>{const r=rng(k*31+7);let dots="";
+  for(let i=0;i<28;i++)dots+=`<circle cx="${f1(28+r()*244)}" cy="${f1(28+r()*388)}" r="${f1(.6+r()*1.5)}" fill="#e3bf72" opacity="${(.25+r()*.6).toFixed(2)}"/>`;
+  return FRAME(id,`${dots}<circle cx="150" cy="${label?118:222}" r="62" fill="none" stroke="#e3bf72" stroke-width=".8" opacity=".6"/>
+  <g transform="translate(150 ${label?118:222}) scale(.46) translate(-100 -100)">${ring(LOGO)}</g>
+  ${label?`<text x="150" y="214" text-anchor="middle" font-family="Gowun Batang,serif" font-weight="700" font-size="15" fill="#e3bf72" letter-spacing="4">${T.back}</text>
+  <path d="M100 226H200" stroke="#e3bf72" stroke-width=".8"/><g fill="#e3bf72">${star(150,226,4)}</g>`:""}`)};
+
+// ===== 5. 카드 기울이기 + 반짝임 =====
+const tilt=$("tilt");let rx,ry;
+if(G&&!REDUCE){rx=G.quickTo(tilt,"rotationX",{duration:.6,ease:"power3.out"});ry=G.quickTo(tilt,"rotationY",{duration:.6,ease:"power3.out"});
+  $("stage").addEventListener("pointermove",e=>{const b=tilt.getBoundingClientRect(),u=(e.clientX-b.left)/b.width,v=(e.clientY-b.top)/b.height;
+    $("card").style.setProperty("--mx",u*100+"%");if(e.pointerType==="mouse"){rx((.5-v)*16);ry((u-.5)*20)}});
+  $("stage").addEventListener("pointerleave",()=>{rx(0);ry(0)})}
+
+// ===== 6. 뽑기 연출: 카드 7장 펼침 → 섞기 → 한 장 → 뒤집기 → 단풍 폭발 =====
+const say=t=>$("msg").textContent=t;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const chars=s=>[...s].map(ch=>ch===" "?" ":`<span>${esc(ch)}</span>`).join("");
+$("yr").addEventListener("input",e=>e.target.value=e.target.value.replace(/\D/g,"").slice(0,4));
+let side=0;
+$("f").onsubmit=e=>{e.preventDefault();
+  const n=$("nm").value,k=$("nk").value,y=$("yr").value.trim();
+  if(!n.trim()||!k.trim()||!y)return say("이름, 닉네임, 태어난 해를 모두 써 주세요.");
+  if(!/^\d{4}$/.test(y))return say("태어난 해는 숫자 4자리로 써 주세요. 예: 1985");
+  const key=REVEAL?"reveal":slot,S=REVEAL?D:D.slots[slot];if(!S)return say("지금은 뽑기 시간이 아니에요. 운영진에게 알려 주세요.");
+  const c=MC.cred(n,k,y),blob=S.e[MC.lookupId(key,c)];
+  if(!blob){say("일치하는 참가자가 없어요. 이름, 닉네임(띄어쓰기 없이), 태어난 해 4자리를 다시 확인해 주세요.");G&&G.fromTo("#f",{x:-8},{x:0,duration:.5,ease:"elastic.out(1,.3)"});return}
+  const r=MC.open(MC.personKey(key,c),blob);if(!r)return say("카드를 열지 못했어요. 운영진에게 알려 주세요.");
+  say("");$("go").disabled=true;side=0;
+  $("front").innerHTML=frontSVG(r.k)+`<div class="over t"><p class="cap">${T.cap}</p><p class="name">${chars(r.n)}</p></div>`;
+  $("back").innerHTML=cover(r.k,"b")+`<div class="over t"><p class="mission">${(REVEAL?r.f:r.m).split(" ").map(w=>`<span>${esc(w)}</span>`).join("")}</p></div><div class="over b"><p class="cap">${T.foot?esc(T.foot):`${esc(r.n)} 님에게 들키지 않게`}</p></div>`;
+  $("deck").innerHTML=Array.from({length:7},(_,i)=>`<div class="dc">${cover(100+i,"d"+i,false)}</div>`).join("");
+  if(!G){$("f").hidden=true;$("stage").classList.add("on");$("card").style.opacity=1;$("go").disabled=false;return}
+  const tl=G.timeline({defaults:{ease:"expo.out"},onComplete:()=>{$("go").disabled=false}});
+  tl.to("#f",{opacity:0,y:-24,scale:.96,duration:.45,ease:"power2.in",onComplete:()=>{$("f").hidden=true;$("stage").classList.add("on");$("stage").scrollIntoView({behavior:"smooth",block:"center"})}});
+  if(spin)tl.to(spin,{timeScale:25,duration:.6,ease:"power2.in"},0);
+  const dcs=[...document.querySelectorAll(".dc")];
+  if(REDUCE){tl.set(dcs,{opacity:0}).set("#card",{rotationY:0}).to("#card",{opacity:1,duration:.4})}
+  else{
+    tl.set(dcs,{opacity:0,y:120,scale:.6}).set("#card",{opacity:0,rotationY:180})
+      .to(dcs,{opacity:1,y:0,scale:.62,duration:.6,stagger:.05})
+      .to(dcs,{x:i=>(i-3)*30,y:i=>Math.abs(i-3)*12,rotation:i=>(i-3)*9,duration:.7,ease:"back.out(1.4)"})
+      .to(dcs,{x:()=>G.utils.random(-90,90),y:()=>G.utils.random(-20,30),rotation:()=>G.utils.random(-25,25),duration:.35,ease:"power2.inOut",repeat:2,repeatRefresh:true})
+      .to(dcs,{x:0,y:0,rotation:0,duration:.4,ease:"power3.inOut"})
+      .to(dcs.slice(0,6),{x:i=>i%2?520:-520,rotation:i=>i%2?40:-40,opacity:0,duration:.7,stagger:.04,ease:"power3.in"})
+      .to(dcs[6],{scale:1,duration:.6,ease:"back.out(1.5)"},"<.2")
+      .set(dcs[6],{opacity:0}).set("#card",{opacity:1})
+      .to("#card",{rotationY:0,duration:1.1,ease:"expo.inOut"})
+      .add(()=>{const b=$("card").getBoundingClientRect(),fx=$("fx");fx.classList.add("front");setTimeout(()=>fx.classList.remove("front"),3200);FX.burst(b.left+b.width/2,b.top+b.height/2,80)},"-=.45")
+      .fromTo("#glow",{opacity:.9,scale:.2},{opacity:0,scale:1.4,duration:1.2,ease:"power2.out"},"<")
+      .from(".front .name span",{opacity:0,scale:2.2,filter:"blur(8px)",y:-10,duration:.7,stagger:.09,ease:"back.out(2)"},"-=1")
+      .from(".front .cap",{opacity:0,y:8,duration:.5},"<");
+  }
+  if(spin)tl.to(spin,{timeScale:1,duration:1.5,ease:"power2.out"},"-=1");
+  tl.to(["#hint","#again"],{opacity:1,duration:.5,stagger:.1},"-=.4");
+};
+const flip=()=>{side^=1;$("hint").textContent=side?"다시 누르거나 밀면 앞면으로 돌아가요":T.hint;
+  if(!G){$("card").style.transform=side?"rotateY(180deg)":"";return}
+  G.to("#card",{rotationY:side?180:0,duration:REDUCE?0:.8,ease:"expo.inOut"});
+  if(side&&!REDUCE)G.fromTo(".mission span",{opacity:0,y:14,filter:"blur(6px)"},{opacity:1,y:0,filter:"blur(0px)",duration:.5,stagger:.06,delay:.35,ease:"expo.out"});
+};
+// 옆으로 밀면 카드가 손가락을 따라 기울다가 뒤집힘 (세로 스크롤은 그대로)
+let drag=null,moved=false;
+$("card").addEventListener("pointerdown",e=>{drag={x:e.clientX};moved=false});
+addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x;if(Math.abs(dx)>8){moved=true;ry&&ry(Math.max(-35,Math.min(35,dx*.35)))}});
+const endDrag=e=>{if(!drag)return;const dx=e.clientX-drag.x;drag=null;ry&&ry(0);if(Math.abs(dx)>45)flip()};
+addEventListener("pointerup",endDrag);addEventListener("pointercancel",()=>{drag=null;ry&&ry(0)});
+$("card").onclick=()=>{if(moved){moved=false;return}flip()};$("card").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();flip()}};
+$("again").onclick=()=>{$("hint").textContent=T.hint;$("stage").classList.remove("on");$("f").hidden=false;$("f").reset();$("front").innerHTML=$("back").innerHTML=$("deck").innerHTML="";
+  if(G){G.set(["#hint","#again","#card"],{opacity:0});G.fromTo("#f",{opacity:0,y:24},{opacity:1,y:0,scale:1,duration:.6,ease:"expo.out"})}
+  scrollTo({top:0,behavior:"smooth"})};
+
+// ===== 운영진 =====
+$("adm").onclick=()=>{$("dlg").showModal();$("pw").focus()};
+$("dclose").onclick=()=>$("dlg").close();
+$("pf").onsubmit=e=>{e.preventDefault();$("pmsg").textContent="여는 중…";
+  setTimeout(()=>{const A=MC.open(MC.pwKey($("pw").value,MC.unb64(D.salt),D.iter),D.a);$("pw").value="";
+    if(!A){$("pmsg").textContent="비밀번호가 맞지 않아요.";$("list").innerHTML="";return}
+    const who=q=>`${esc(q.name)}<small>${esc(q.nick)} · ${esc(q.year)}</small>`;
+    if(REVEAL){$("pmsg").textContent=`내 카드 확인 모드 · ${A.p.length}명`;
+      $("list").innerHTML=`<table><thead><tr><th>이름</th><th>카드 · 운세</th></tr></thead><tbody>${
+        A.p.map((q,g)=>`<tr><td>${who(q)}</td><td>No.${A.k[g]}<span class="m">${esc(A.F[g])}</span></td></tr>`).join("")}</tbody></table>`;return}
+    const L=A.s[slot];if(!L){$("pmsg").textContent="현재 회차 데이터가 없어요.";return}
+    $("pmsg").textContent=`${slotLabel} · ${A.p.length}명`;
+    $("list").innerHTML=`<table><thead><tr><th>뽑은 사람</th><th>마니또 · 미션</th></tr></thead><tbody>${
+      L.map(([t,mi],g)=>`<tr><td>${who(A.p[g])}</td><td>${who(A.p[t])}<span class="m">${esc(A.M[mi])}</span></td></tr>`).join("")}</tbody></table>`},30)};
+})();
+</script>
+</body>
+</html>
