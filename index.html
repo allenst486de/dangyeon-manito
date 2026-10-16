@@ -167,13 +167,13 @@ const C=["#d24846","#ee8a2a","#f2c230","#4b9b3b","#225ea7","#835594"],LOGO=[C[0]
 const FIXED=!!(D.slots&&D.slots.fixed);
 const slot=FIXED?"fixed":Math.floor((Date.now()/1000+D.tz)/D.sec);
 const fmt=s=>{const d=new Date((s*D.sec-D.tz)*1000);return`${d.getMonth()+1}월 ${d.getDate()}일 ${d.getHours()}시`};
-const slotLabel=FIXED?"확정된 매칭":`${fmt(slot)}~${new Date(((slot+1)*D.sec-D.tz)*1000).getHours()}시 회차`;
+const slotLabel=FIXED?"전체 명단":`${fmt(slot)}~${new Date(((slot+1)*D.sec-D.tz)*1000).getHours()}시 회차`;
 // 모드: 추첨(draw) / 추첨 끝난 뒤 내 카드 확인(reveal) — mode.js가 고른 데이터의 mode로 바뀐다
 const REVEAL=D.mode==="reveal";
 const T=REVEAL?{back:"오늘의 운세",cap:"나의 카드",hint:"카드를 누르거나 옆으로 밀면 오늘의 운세가 있어요",foot:"마니또 함께해 줘서 고마워요",go:"내 카드 보기",sub:"마니또가 받았던 바로 그 카드예요"}
   :{back:"오늘의 미션",cap:"당신의 마니또",hint:"카드를 누르거나 옆으로 밀면 오늘의 미션이 있어요",foot:null,go:"내 마니또 카드 뽑기",sub:null};
 $("go").textContent=T.go;$("hint").textContent=T.hint;if(T.sub)$("sub").textContent=T.sub;
-$("band").textContent=REVEAL?`마니또가 끝났어요 · ${D.total}명의 카드`:D.slots[slot]?`${slotLabel} · ${D.total}명`:"지금은 뽑기 시간이 아니에요";
+$("band").textContent=REVEAL?`마니또가 끝났어요 · ${D.total}명의 카드`:D.slots[slot]?(FIXED?`마니또 뽑기 · ${D.total}명이 함께해요`:`${slotLabel} · ${D.total}명`):"지금은 뽑기 시간이 아니에요";
 
 // ===== 2. 단풍잎·은행잎 입자 (캔버스) — 바람, 손가락 피하기, 카드 공개 때 폭발 =====
 const FX=(()=>{const cv=$("fx"),x=cv.getContext("2d"),dpr=Math.min(devicePixelRatio||1,2);
